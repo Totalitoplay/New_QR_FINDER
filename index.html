@@ -3,100 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSA Pro - Planta Externa</title>
+    <title>GSA Pro - Panel de Control</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --blue: #053b6f; --sky: #007bff; --green: #28a745; --red: #dc3545; --gray: #f4f7f6; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray); margin: 0; padding: 10px; color: #333; }
-        .container { max-width: 800px; margin: auto; }
+        :root { --blue: #053b6f; --sky: #007bff; --green: #28a745; --red: #dc3545; --gray: #f0f2f5; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray); margin: 0; padding: 15px; color: #333; }
         
-        /* Buscador */
-        .search-card { background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .input-group { display: flex; gap: 8px; }
+        /* Layout Principal */
+        .dashboard { display: flex; gap: 20px; max-width: 1200px; margin: auto; flex-wrap: wrap; }
+        .main-content { flex: 3; min-width: 300px; }
+        .sidebar { flex: 1; min-width: 250px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); height: fit-content; }
+
+        /* Buscador y Cards */
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .input-group { display: flex; gap: 8px; margin-top: 10px; }
         input { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
         input:focus { border-color: var(--sky); }
-        button { padding: 12px 20px; background: var(--blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button { padding: 12px 20px; background: var(--blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: var(--sky); }
 
-        /* Dashboard de info */
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .main-card { background: white; padding: 15px; border-radius: 12px; border-top: 4px solid var(--sky); position: relative; }
-        .main-card b { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; }
-        .val { font-size: 18px; font-weight: bold; color: var(--blue); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .data-card { background: white; padding: 15px; border-radius: 12px; border-top: 4px solid var(--sky); position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .data-card b { display: block; font-size: 11px; color: #888; text-transform: uppercase; }
+        .val { font-size: 18px; font-weight: bold; color: var(--blue); margin-top: 5px; }
         
-        #qrcode { position: absolute; top: 15px; right: 15px; }
+        #qrcode { position: absolute; top: 10px; right: 10px; padding: 5px; background: white; border: 1px solid #eee; border-radius: 5px; }
 
-        /* Tabla Estilizada */
-        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        /* Tabla */
+        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { background: var(--blue); color: white; padding: 12px; text-align: center; }
+        th { background: var(--blue); color: white; padding: 12px; }
         td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
         .status-libre { color: var(--green); font-weight: bold; background: #e8f5e9; border-radius: 5px; padding: 4px 8px; }
         .status-ocupado { color: #666; font-size: 12px; }
 
-        /* Historial */
-        .history { margin-top: 20px; background: #eee; padding: 15px; border-radius: 12px; }
-        .history h4 { margin: 0 0 10px 0; font-size: 13px; color: #666; }
-        .hist-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; }
-        .tag:hover { background: var(--sky); color: white; }
+        /* Historial (Derecha) */
+        .sidebar h4 { margin: 0 0 15px 0; color: var(--blue); border-bottom: 2px solid var(--gray); padding-bottom: 8px; }
+        .hist-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; border-radius: 5px; }
+        .hist-item:hover { background: var(--gray); color: var(--sky); }
+        .hist-item span { font-size: 14px; font-weight: 500; }
+        .hist-item i { font-size: 11px; color: #aaa; }
 
-        .fsp-badge { display: inline-block; background: var(--blue); color: white; padding: 2px 8px; border-radius: 4px; font-size: 14px; margin-top: 5px; }
+        .fsp-badge { display: inline-block; background: #e3f2fd; color: var(--sky); padding: 3px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="search-card">
-        <h3 style="margin:0 0 15px 0; color:var(--blue)">🚀 GSA Finder Pro</h3>
-        <div class="input-group">
-            <input type="text" id="qrInput" placeholder="Ej: TP1387397">
-            <button onclick="buscar()">CONSULTAR</button>
+<div class="dashboard">
+    <div class="main-content">
+        <div class="card">
+            <h3 style="margin:0; color:var(--blue)">🚀 GSA Finder Pro</h3>
+            <div class="input-group">
+                <input type="text" id="qrInput" placeholder="Escanea o escribe QR...">
+                <button onclick="buscar()">CONSULTAR</button>
+            </div>
+            <div id="loader" style="display:none; text-align:center; margin-top:10px; color:var(--sky)">Conectando con la red...</div>
         </div>
-        <div id="loader" style="display:none; text-align:center; margin-top:10px; color:var(--sky)">Cargando datos...</div>
+
+        <div id="content" style="display:none;">
+            <div class="info-grid">
+                <div class="data-card">
+                    <b>Equipo / Nodo</b>
+                    <div class="val" id="resNombre">-</div>
+                    <div class="fsp-badge" id="resFSP">-</div>
+                    <div id="qrcode"></div>
+                </div>
+                <div class="data-card">
+                    <b>Ubicación</b>
+                    <div class="val" style="font-size:14px; margin-bottom: 8px;" id="resCoords">-</div>
+                    <a id="resMaps" href="#" target="_blank" style="color:var(--sky); font-weight:bold; text-decoration:none; font-size:13px;">📍 Ver en Maps</a>
+                </div>
+                <div class="data-card" style="border-top-color: var(--green);">
+                    <b>Disponibilidad</b>
+                    <div class="val"><span id="resLibres" style="color:var(--green)">0</span> / <span id="resTotal">0</span></div>
+                    <small style="color:#888">Puertos Libres</small>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Pto</th>
+                            <th>Estado / Cuenta Cliente</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <div id="content" style="display:none;">
-        <div class="info-grid">
-            <div class="main-card">
-                <b>Equipo / Nodo</b>
-                <div class="val" id="resNombre">-</div>
-                <div class="fsp-badge" id="resFSP">-</div>
-                <div id="qrcode"></div> </div>
-            <div class="main-card">
-                <b>Ubicación</b>
-                <div class="val" style="font-size:14px;" id="resCoords">-</div>
-                <a id="resMaps" href="#" target="_blank" style="color:var(--sky); font-weight:bold; text-decoration:none; font-size:13px;">📍 Abrir en Google Maps</a>
+    <div class="sidebar">
+        <h4>🕒 Recientes</h4>
+        <div id="historial">
             </div>
-            <div class="main-card" style="border-top-color: var(--green);">
-                <b>Disponibilidad</b>
-                <div class="val"><span id="resLibres" style="color:var(--green)">0</span> / <span id="resTotal">0</span></div>
-                <small>Puertos Libres</small>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Pto</th>
-                        <th>Estado / Cuenta Cliente</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="history">
-        <h4>Búsquedas recientes (Últimas 10)</h4>
-        <div class="hist-tags" id="historial"></div>
     </div>
 </div>
 
 <script>
-    let qrcodeGenerator = new QRCode(document.getElementById("qrcode"), { width: 60, height: 60 });
+    let qrcodeGenerator = new QRCode(document.getElementById("qrcode"), { width: 50, height: 50 });
 
-    // Cargar historial al iniciar
     window.onload = () => actualizarHistorialUI();
 
     async function buscar(valorQR = null) {
@@ -119,10 +126,10 @@
                 render(data, qr);
                 guardarHistorial(qr);
             } else {
-                alert("QR no encontrado.");
+                alert("QR no encontrado en el sistema.");
             }
         } catch (e) {
-            alert("Error de conexión con la API.");
+            alert("Error de respuesta. Reintenta.");
         } finally {
             document.getElementById('loader').style.display = 'none';
         }
@@ -132,22 +139,18 @@
         const splitter = data.splitters[0];
         const puertos = splitter.listmodelpuertos;
 
-        // Datos Generales
         document.getElementById('resNombre').innerText = splitter.nombre || "N/A";
-        document.getElementById('resFSP').innerText = `F: ${splitter.frame} | S: ${splitter.slot} | P: ${splitter.puerto}`;
+        document.getElementById('resFSP').innerText = `F:${splitter.frame} S:${splitter.slot} P:${splitter.puerto}`;
         document.getElementById('resCoords').innerText = `${data.latitud}, ${data.longitud}`;
         document.getElementById('resMaps').href = `https://www.google.com/maps/search/?api=1&query=${data.latitud},${data.longitud}`;
         
-        // QR Visual
         qrcodeGenerator.clear();
         qrcodeGenerator.makeCode(qr);
 
-        // Contador
         const libres = puertos.filter(p => p.estatusPuerto == "1").length;
         document.getElementById('resLibres').innerText = libres;
         document.getElementById('resTotal').innerText = puertos.length;
 
-        // Tabla simplificada
         const body = document.getElementById('tablaBody');
         body.innerHTML = "";
         puertos.forEach(p => {
@@ -155,7 +158,7 @@
             body.insertAdjacentHTML('beforeend', `
                 <tr>
                     <td><b>${p.numeroPuerto}</b></td>
-                    <td><span class="${esLibre ? 'status-libre' : 'status-ocupado'}">${esLibre ? 'LIBRE' : 'CUENTA: ' + (p.cuenta || 'OCUPADO')}</span></td>
+                    <td><span class="${esLibre ? 'status-libre' : 'status-ocupado'}">${esLibre ? 'LIBRE' : 'CTA: ' + (p.cuenta || 'OCUPADO')}</span></td>
                 </tr>
             `);
         });
@@ -165,9 +168,9 @@
 
     function guardarHistorial(qr) {
         let lista = JSON.parse(localStorage.getItem('gsa_hist')) || [];
-        lista = lista.filter(item => item !== qr); // Evitar repetidos
-        lista.unshift(qr); // Agregar al inicio
-        if(lista.length > 10) lista.pop(); // Mantener solo 10
+        lista = lista.filter(item => item !== qr);
+        lista.unshift(qr);
+        if(lista.length > 10) lista.pop();
         localStorage.setItem('gsa_hist', JSON.stringify(lista));
         actualizarHistorialUI();
     }
@@ -175,7 +178,12 @@
     function actualizarHistorialUI() {
         const lista = JSON.parse(localStorage.getItem('gsa_hist')) || [];
         const div = document.getElementById('historial');
-        div.innerHTML = lista.map(qr => `<div class="tag" onclick="buscar('${qr}')">${qr}</div>`).join('');
+        div.innerHTML = lista.map(qr => `
+            <div class="hist-item" onclick="buscar('${qr}')">
+                <span>${qr}</span>
+                <i>ver ➜</i>
+            </div>
+        `).join('');
     }
 </script>
 
