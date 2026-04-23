@@ -3,80 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSA Pro - Panel de Control</title>
+    <title>GSA Pro - Ultra Fast</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --blue: #053b6f; --sky: #007bff; --green: #28a745; --red: #dc3545; --gray: #f0f2f5; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray); margin: 0; padding: 15px; color: #333; }
-        
-        /* Layout Principal */
-        .dashboard { display: flex; gap: 20px; max-width: 1200px; margin: auto; flex-wrap: wrap; }
-        .main-content { flex: 3; min-width: 300px; }
-        .sidebar { flex: 1; min-width: 250px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); height: fit-content; }
+        :root { --blue: #053b6f; --sky: #007bff; --green: #28a745; --gray: #f0f2f5; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--gray); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        /* Buscador y Cards */
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .input-group { display: flex; gap: 8px; margin-top: 10px; }
-        input { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
+        /* DASHBOARD LAYOUT */
+        .main-content { flex: 1; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; }
+        .sidebar { width: 260px; background: white; border-left: 1px solid #ddd; padding: 15px; display: flex; flex-direction: column; }
+
+        /* CARDS */
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .search-group { display: flex; gap: 8px; }
+        input { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; text-transform: uppercase; }
         input:focus { border-color: var(--sky); }
-        button { padding: 12px 20px; background: var(--blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background: var(--sky); }
+        button { background: var(--blue); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .data-card { background: white; padding: 15px; border-radius: 12px; border-top: 4px solid var(--sky); position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .data-card b { display: block; font-size: 11px; color: #888; text-transform: uppercase; }
-        .val { font-size: 18px; font-weight: bold; color: var(--blue); margin-top: 5px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+        .data-card { background: white; padding: 12px; border-radius: 10px; border-top: 4px solid var(--sky); position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .data-card b { font-size: 10px; color: #888; text-transform: uppercase; }
+        .val { font-size: 16px; font-weight: bold; color: var(--blue); margin-top: 4px; }
+        .fsp-badge { display: inline-block; background: #e3f2fd; color: var(--sky); padding: 2px 8px; border-radius: 15px; font-size: 12px; font-weight: bold; margin-top: 5px; }
         
-        #qrcode { position: absolute; top: 10px; right: 10px; padding: 5px; background: white; border: 1px solid #eee; border-radius: 5px; }
+        #qrcode { position: absolute; top: 10px; right: 10px; }
 
-        /* Tabla */
-        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { background: var(--blue); color: white; padding: 12px; }
-        td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
-        .status-libre { color: var(--green); font-weight: bold; background: #e8f5e9; border-radius: 5px; padding: 4px 8px; }
-        .status-ocupado { color: #666; font-size: 12px; }
+        /* TABLA RAPIDA */
+        .table-container { background: white; border-radius: 10px; overflow: hidden; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: var(--blue); color: white; padding: 10px; text-align: center; }
+        td { padding: 8px; text-align: center; border-bottom: 1px solid #eee; }
+        .st-1 { color: var(--green); font-weight: bold; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; } /* LIBRE */
+        .st-occ { color: #666; font-size: 11px; }
 
-        /* Historial (Derecha) */
-        .sidebar h4 { margin: 0 0 15px 0; color: var(--blue); border-bottom: 2px solid var(--gray); padding-bottom: 8px; }
-        .hist-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; border-radius: 5px; }
+        /* HISTORIAL */
+        .hist-item { padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; border-radius: 6px; }
         .hist-item:hover { background: var(--gray); color: var(--sky); }
-        .hist-item span { font-size: 14px; font-weight: 500; }
-        .hist-item i { font-size: 11px; color: #aaa; }
 
-        .fsp-badge { display: inline-block; background: #e3f2fd; color: var(--sky); padding: 3px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-top: 8px; }
+        #loader { display: none; color: var(--sky); font-weight: bold; text-align: center; margin-bottom: 10px; font-size: 12px; }
+
+        @media (max-width: 800px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; order: 3; border-left: none; border-top: 1px solid #ddd; }
+            .main-content { height: auto; }
+        }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
     <div class="main-content">
         <div class="card">
-            <h3 style="margin:0; color:var(--blue)">🚀 GSA Finder Pro</h3>
-            <div class="input-group">
-                <input type="text" id="qrInput" placeholder="Escanea o escribe QR...">
+            <div id="loader">⚡ PROCESANDO...</div>
+            <div class="search-group">
+                <input type="text" id="qrIn" placeholder="Introducir TP..." autofocus>
                 <button onclick="buscar()">CONSULTAR</button>
             </div>
-            <div id="loader" style="display:none; text-align:center; margin-top:10px; color:var(--sky)">Conectando con la red...</div>
         </div>
 
-        <div id="content" style="display:none;">
+        <div id="res" style="display:none;">
             <div class="info-grid">
                 <div class="data-card">
                     <b>Equipo / Nodo</b>
-                    <div class="val" id="resNombre">-</div>
-                    <div class="fsp-badge" id="resFSP">-</div>
+                    <div class="val" id="n">-</div>
+                    <div class="fsp-badge" id="fsp">-</div>
                     <div id="qrcode"></div>
                 </div>
                 <div class="data-card">
                     <b>Ubicación</b>
-                    <div class="val" style="font-size:14px; margin-bottom: 8px;" id="resCoords">-</div>
-                    <a id="resMaps" href="#" target="_blank" style="color:var(--sky); font-weight:bold; text-decoration:none; font-size:13px;">📍 Ver en Maps</a>
+                    <div class="val" id="co" style="font-size:13px;">-</div>
+                    <a id="ma" href="#" target="_blank" style="color:var(--sky); font-size:12px; font-weight:bold; text-decoration:none;">📍 Google Maps</a>
                 </div>
                 <div class="data-card" style="border-top-color: var(--green);">
                     <b>Disponibilidad</b>
-                    <div class="val"><span id="resLibres" style="color:var(--green)">0</span> / <span id="resTotal">0</span></div>
-                    <small style="color:#888">Puertos Libres</small>
+                    <div class="val"><span id="li" style="color:var(--green)">0</span> / <span id="to">0</span></div>
+                    <small style="font-size:10px; color:#999;">Puertos Libres</small>
                 </div>
             </div>
 
@@ -84,108 +85,93 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>N° Pto</th>
-                            <th>Estado / Cuenta Cliente</th>
+                            <th>Pto</th>
+                            <th>Estado / Cliente</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaBody"></tbody>
+                    <tbody id="tb"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <div class="sidebar">
-        <h4>🕒 Recientes</h4>
-        <div id="historial">
-            </div>
+        <h4>🕒 RECIENTES</h4>
+        <div id="hist"></div>
     </div>
-</div>
 
-<script>
-    let qrcodeGenerator = new QRCode(document.getElementById("qrcode"), { width: 50, height: 50 });
+    <script>
+        let qrGen = new QRCode(document.getElementById("qrcode"), { width: 45, height: 45 });
+        const api = "https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=";
+        const proxy = "https://api.allorigins.win/get?url=";
 
-    window.onload = () => actualizarHistorialUI();
+        window.onload = () => updateHistUI();
 
-    async function buscar(valorQR = null) {
-        const qr = valorQR || document.getElementById('qrInput').value.trim();
-        if(!qr) return;
-        
-        document.getElementById('qrInput').value = qr;
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('content').style.display = 'none';
+        async function buscar(val = null) {
+            const q = (val || document.getElementById('qrIn').value).trim().toUpperCase();
+            if(!q) return;
 
-        const api = `https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=${qr}`;
-        const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(api)}`;
+            document.getElementById('qrIn').value = q;
+            document.getElementById('loader').style.display = 'block';
 
-        try {
-            const resp = await fetch(proxy);
-            const wrapper = await resp.json();
-            const data = JSON.parse(wrapper.contents);
+            try {
+                // Fetch con prioridad y caché de busto para velocidad
+                const r = await fetch(`${proxy}${encodeURIComponent(api + q)}&_=${Date.now()}`, { priority: 'high' });
+                const w = await r.json();
+                const d = JSON.parse(w.contents);
 
-            if (data.splitters && data.splitters.length > 0) {
-                render(data, qr);
-                guardarHistorial(qr);
-            } else {
-                alert("QR no encontrado en el sistema.");
-            }
-        } catch (e) {
-            alert("Error de respuesta. Reintenta.");
-        } finally {
-            document.getElementById('loader').style.display = 'none';
+                if (d.splitters && d.splitters.length > 0) {
+                    render(d, q);
+                    saveHist(q);
+                } else { alert("No encontrado"); }
+            } catch (e) { alert("Error de red"); }
+            finally { document.getElementById('loader').style.display = 'none'; }
         }
-    }
 
-    function render(data, qr) {
-        const splitter = data.splitters[0];
-        const puertos = splitter.listmodelpuertos;
+        function render(d, q) {
+            const s = d.splitters[0];
+            const p = s.listmodelpuertos;
 
-        document.getElementById('resNombre').innerText = splitter.nombre || "N/A";
-        document.getElementById('resFSP').innerText = `F:${splitter.frame} S:${splitter.slot} P:${splitter.puerto}`;
-        document.getElementById('resCoords').innerText = `${data.latitud}, ${data.longitud}`;
-        document.getElementById('resMaps').href = `https://www.google.com/maps/search/?api=1&query=${data.latitud},${data.longitud}`;
-        
-        qrcodeGenerator.clear();
-        qrcodeGenerator.makeCode(qr);
+            document.getElementById('n').innerText = s.nombre || d.nombreCaja;
+            document.getElementById('fsp').innerText = `F:${s.frame} S:${s.slot} P:${s.puerto}`;
+            document.getElementById('co').innerText = `${d.latitud}, ${d.longitud}`;
+            document.getElementById('ma').href = `https://www.google.com/maps/search/?api=1&query=${d.latitud},${d.longitud}`;
+            
+            qrGen.clear(); qrGen.makeCode(q);
 
-        const libres = puertos.filter(p => p.estatusPuerto == "1").length;
-        document.getElementById('resLibres').innerText = libres;
-        document.getElementById('resTotal').innerText = puertos.length;
+            const libres = p.filter(x => x.estatusPuerto == "1").length;
+            document.getElementById('li').innerText = libres;
+            document.getElementById('to').innerText = p.length;
 
-        const body = document.getElementById('tablaBody');
-        body.innerHTML = "";
-        puertos.forEach(p => {
-            const esLibre = p.estatusPuerto == "1";
-            body.insertAdjacentHTML('beforeend', `
-                <tr>
-                    <td><b>${p.numeroPuerto}</b></td>
-                    <td><span class="${esLibre ? 'status-libre' : 'status-ocupado'}">${esLibre ? 'LIBRE' : 'CTA: ' + (p.cuenta || 'OCUPADO')}</span></td>
-                </tr>
-            `);
-        });
+            // Construcción ultra-rápida de tabla
+            let rows = '';
+            for(let i=0; i<p.length; i++){
+                const esL = p[i].estatusPuerto == "1";
+                rows += `<tr>
+                    <td><b>${p[i].numeroPuerto}</b></td>
+                    <td><span class="${esL ? 'st-1' : 'st-occ'}">${esL ? 'LIBRE' : (p[i].cuenta || 'OCUPADO')}</span></td>
+                </tr>`;
+            }
+            document.getElementById('tb').innerHTML = rows;
+            document.getElementById('res').style.display = 'block';
+        }
 
-        document.getElementById('content').style.display = 'block';
-    }
+        function saveHist(q) {
+            let l = JSON.parse(localStorage.getItem('gsa_h')) || [];
+            l = [q, ...l.filter(x => x !== q)].slice(0, 10);
+            localStorage.setItem('gsa_h', JSON.stringify(l));
+            updateHistUI();
+        }
 
-    function guardarHistorial(qr) {
-        let lista = JSON.parse(localStorage.getItem('gsa_hist')) || [];
-        lista = lista.filter(item => item !== qr);
-        lista.unshift(qr);
-        if(lista.length > 10) lista.pop();
-        localStorage.setItem('gsa_hist', JSON.stringify(lista));
-        actualizarHistorialUI();
-    }
+        function updateHistUI() {
+            const l = JSON.parse(localStorage.getItem('gsa_h')) || [];
+            document.getElementById('hist').innerHTML = l.map(x => `
+                <div class="hist-item" onclick="buscar('${x}')">
+                    <span>${x}</span><small>➜</small>
+                </div>`).join('');
+        }
 
-    function actualizarHistorialUI() {
-        const lista = JSON.parse(localStorage.getItem('gsa_hist')) || [];
-        const div = document.getElementById('historial');
-        div.innerHTML = lista.map(qr => `
-            <div class="hist-item" onclick="buscar('${qr}')">
-                <span>${qr}</span>
-                <i>ver ➜</i>
-            </div>
-        `).join('');
-    }
-</script>
-
+        document.getElementById('qrIn').addEventListener('keypress', e => { if(e.key === 'Enter') buscar(); });
+    </script>
 </body>
 </html>
