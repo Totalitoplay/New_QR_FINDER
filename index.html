@@ -3,153 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador GSA - Planta Externa</title>
+    <title>GSA Fast Search</title>
     <style>
-        :root { --primary: #053b6f; --accent: #007bff; --success: #28a745; --danger: #dc3545; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 15px; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        h2 { color: var(--primary); text-align: center; border-bottom: 3px solid var(--accent); padding-bottom: 10px; margin-top: 0; }
-        
-        .search-box { display: flex; gap: 10px; margin: 20px 0; }
-        input { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; outline: none; }
-        input:focus { border-color: var(--accent); }
-        button { padding: 12px 25px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: var(--accent); }
-
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .card { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid var(--accent); }
-        .card b { color: var(--primary); display: block; margin-bottom: 5px; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
-        
-        .maps-btn { display: inline-block; margin-top: 10px; padding: 8px 15px; background: #4285F4; color: white; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; text-align: center; }
-
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th { background-color: var(--primary); color: white; padding: 12px; text-align: center; white-space: nowrap; }
-        td { border: 1px solid #eee; padding: 10px; text-align: center; }
-        tr:nth-child(even) { background-color: #fcfcfc; }
-        
-        .status-libre { color: var(--success); font-weight: bold; background: #e8f5e9; padding: 4px 8px; border-radius: 4px; }
-        .status-ocupado { color: var(--danger); font-weight: bold; background: #ffebee; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
-        
-        #loading { text-align: center; padding: 20px; color: #666; font-style: italic; }
+        :root { --primary: #053b6f; --accent: #007bff; --success: #28a745; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .search-box { display: flex; gap: 5px; margin-bottom: 15px; }
+        input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none; }
+        button { padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .card { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
+        .card b { font-size: 11px; color: #666; text-transform: uppercase; display: block; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        th { background: var(--primary); color: white; padding: 8px; position: sticky; top: 0; }
+        td { border-bottom: 1px solid #eee; padding: 8px; text-align: center; }
+        .status-1 { color: var(--success); font-weight: bold; } /* Libre */
+        .status-2 { color: #dc3545; font-size: 11px; } /* Ocupado */
+        #loader { display: none; text-align: center; color: var(--accent); font-weight: bold; padding: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📋 Detalle de Red Externa (GSA)</h2>
-    
     <div class="search-box">
-        <input type="text" id="qrInput" placeholder="QR (ej: TP1387397)" value="TP1387397">
-        <button onclick="consultar()">BUSCAR</button>
+        <input type="text" id="qr" placeholder="Escribe QR..." value="TP1387397">
+        <button onclick="buscar()">BUSCAR</button>
     </div>
 
-    <div id="loading" style="display:none;">🔍 Consultando base de datos de Sistemastp...</div>
+    <div id="loader">CARGANDO...</div>
 
-    <div id="resultado" style="display:none;">
-        <div class="info-grid">
-            <div class="card"><b>QR / Caja</b><span id="resQR">-</span></div>
-            <div class="card"><b>Nombre del Equipo</b><span id="resNombre">-</span></div>
-            <div class="card"><b>Disponibilidad</b><span id="resLibres">-</span></div>
-            <div class="card">
-                <b>Ubicación</b>
-                <span id="resCoords" style="font-size: 11px;">-</span><br>
-                <a id="resMaps" href="#" target="_blank" class="maps-btn">📍 Google Maps</a>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>N° Puerto</th>
-                        <th>Frame</th>
-                        <th>Slot</th>
-                        <th>Puerto ID</th>
-                        <th>Cuenta / Cliente</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaPuertos"></tbody>
-            </table>
-        </div>
+    <div id="res" style="display:none;">
+        <div class="card"><b>Equipo</b><span id="n"></span></div>
+        <div class="card"><b>Ubicación</b><span id="c"></span> | <a id="m" href="#" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold;">MAPS 📍</a></div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Pto</th>
+                    <th>F/S/P</th>
+                    <th>Estado / Cuenta</th>
+                </tr>
+            </thead>
+            <tbody id="t"></tbody>
+        </table>
     </div>
 </div>
 
 <script>
-    async function consultar() {
-        const qr = document.getElementById('qrInput').value.trim();
-        if(!qr) return alert("Por favor ingresa un código QR");
+    async function buscar() {
+        const q = document.getElementById('qr').value.trim();
+        const l = document.getElementById('loader');
+        const r = document.getElementById('res');
+        
+        l.style.display = 'block';
+        r.style.display = 'none';
 
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('resultado').style.display = 'none';
-
-        // Usamos AllOrigins para saltar el bloqueo de CORS
-        const url = `https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=${qr}`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+        // Proxy ultra-rápido (aprovechando el cache de AllOrigins para peticiones repetidas)
+        const api = `https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=${q}`;
+        const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(api)}`;
 
         try {
-            const response = await fetch(proxyUrl);
-            const wrapper = await response.json();
+            // Usamos fetch con prioridad alta
+            const response = await fetch(proxy, { priority: 'high' });
+            const data = await response.json();
+            const json = JSON.parse(data.contents);
             
-            // AllOrigins devuelve el JSON como string en .contents
-            const data = JSON.parse(wrapper.contents);
+            const s = json.splitters[0];
+            const p = s.listmodelpuertos;
 
-            if (data.splitters && data.splitters.length > 0) {
-                mostrarDatos(data, qr);
-            } else {
-                alert("No se encontró información técnica para este QR.");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Error de conexión. Intenta de nuevo o verifica que el QR sea válido.");
+            document.getElementById('n').innerText = s.nombre;
+            document.getElementById('c').innerText = `${json.latitud}, ${json.longitud}`;
+            document.getElementById('m').href = `https://www.google.com/maps/search/?api=1&query=${json.latitud},${json.longitud}`;
+
+            let h = '';
+            p.forEach(i => {
+                const libre = i.estatusPuerto == "1";
+                h += `<tr>
+                    <td><b>${i.numeroPuerto}</b></td>
+                    <td>${s.frame}/${s.slot}/${s.puerto}</td>
+                    <td class="status-${i.estatusPuerto}">${libre ? 'LIBRE' : (i.cuenta || 'OCUPADO')}</td>
+                </tr>`;
+            });
+            document.getElementById('t').innerHTML = h;
+            r.style.display = 'block';
+        } catch (e) {
+            alert("Error de conexión rápida");
         } finally {
-            document.getElementById('loading').style.display = 'none';
+            l.style.display = 'none';
         }
     }
-
-    function mostrarDatos(data, qr) {
-        const splitter = data.splitters[0];
-        const puertos = splitter.listmodelpuertos || [];
-
-        // 1. Cabecera
-        document.getElementById('resQR').innerText = data.qr || qr;
-        document.getElementById('resNombre').innerText = splitter.nombre || data.nombreCaja || 'N/A';
-        
-        const lat = data.latitud || 0;
-        const lon = data.longitud || 0;
-        document.getElementById('resCoords').innerText = `${lat}, ${lon}`;
-        document.getElementById('resMaps').href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
-
-        // 2. Conteo de Libres
-        const libres = puertos.filter(p => p.estatusPuerto == "1").length;
-        document.getElementById('resLibres').innerHTML = `<b style="color:var(--success)">${libres}</b> Libres de ${puertos.length}`;
-
-        // 3. Renderizar Tabla
-        const tabla = document.getElementById('tablaPuertos');
-        tabla.innerHTML = "";
-
-        puertos.forEach((p) => {
-            const esLibre = p.estatusPuerto == "1";
-            const textoEstado = esLibre ? "DISPONIBLE" : "OCUPADO";
-            const datoCuenta = p.cuenta ? p.cuenta : (esLibre ? "---" : "SIN DATO");
-
-            const row = `
-                <tr>
-                    <td><b>${p.numeroPuerto}</b></td>
-                    <td>${splitter.frame || 'N/A'}</td>
-                    <td>${splitter.slot || 'N/A'}</td>
-                    <td>${splitter.puerto || 'N/A'}</td>
-                    <td>${datoCuenta}</td>
-                    <td><span class="${esLibre ? 'status-libre' : 'status-ocupado'}">${textoEstado}</span></td>
-                </tr>
-            `;
-            tabla.insertAdjacentHTML('beforeend', row);
-        });
-
-        document.getElementById('resultado').style.display = 'block';
-    }
 </script>
-
 </body>
 </html>
