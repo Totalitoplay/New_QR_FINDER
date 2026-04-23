@@ -3,94 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSA Fast Search</title>
+    <title>GSA Pro - Planta Externa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --primary: #053b6f; --accent: #007bff; --success: #28a745; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .search-box { display: flex; gap: 5px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none; }
-        button { padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .card { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
-        .card b { font-size: 11px; color: #666; text-transform: uppercase; display: block; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
-        th { background: var(--primary); color: white; padding: 8px; position: sticky; top: 0; }
-        td { border-bottom: 1px solid #eee; padding: 8px; text-align: center; }
-        .status-1 { color: var(--success); font-weight: bold; } /* Libre */
-        .status-2 { color: #dc3545; font-size: 11px; } /* Ocupado */
-        #loader { display: none; text-align: center; color: var(--accent); font-weight: bold; padding: 10px; }
+        :root { --blue: #053b6f; --sky: #007bff; --green: #28a745; --red: #dc3545; --gray: #f4f7f6; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray); margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 800px; margin: auto; }
+        
+        /* Buscador */
+        .search-card { background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .input-group { display: flex; gap: 8px; }
+        input { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--sky); }
+        button { padding: 12px 20px; background: var(--blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* Dashboard de info */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .main-card { background: white; padding: 15px; border-radius: 12px; border-top: 4px solid var(--sky); position: relative; }
+        .main-card b { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        .val { font-size: 18px; font-weight: bold; color: var(--blue); }
+        
+        #qrcode { position: absolute; top: 15px; right: 15px; }
+
+        /* Tabla Estilizada */
+        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: var(--blue); color: white; padding: 12px; text-align: center; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+        .status-libre { color: var(--green); font-weight: bold; background: #e8f5e9; border-radius: 5px; padding: 4px 8px; }
+        .status-ocupado { color: #666; font-size: 12px; }
+
+        /* Historial */
+        .history { margin-top: 20px; background: #eee; padding: 15px; border-radius: 12px; }
+        .history h4 { margin: 0 0 10px 0; font-size: 13px; color: #666; }
+        .hist-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; }
+        .tag:hover { background: var(--sky); color: white; }
+
+        .fsp-badge { display: inline-block; background: var(--blue); color: white; padding: 2px 8px; border-radius: 4px; font-size: 14px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="search-box">
-        <input type="text" id="qr" placeholder="Escribe QR..." value="TP1387397">
-        <button onclick="buscar()">BUSCAR</button>
+    <div class="search-card">
+        <h3 style="margin:0 0 15px 0; color:var(--blue)">🚀 GSA Finder Pro</h3>
+        <div class="input-group">
+            <input type="text" id="qrInput" placeholder="Ej: TP1387397">
+            <button onclick="buscar()">CONSULTAR</button>
+        </div>
+        <div id="loader" style="display:none; text-align:center; margin-top:10px; color:var(--sky)">Cargando datos...</div>
     </div>
 
-    <div id="loader">CARGANDO...</div>
+    <div id="content" style="display:none;">
+        <div class="info-grid">
+            <div class="main-card">
+                <b>Equipo / Nodo</b>
+                <div class="val" id="resNombre">-</div>
+                <div class="fsp-badge" id="resFSP">-</div>
+                <div id="qrcode"></div> </div>
+            <div class="main-card">
+                <b>Ubicación</b>
+                <div class="val" style="font-size:14px;" id="resCoords">-</div>
+                <a id="resMaps" href="#" target="_blank" style="color:var(--sky); font-weight:bold; text-decoration:none; font-size:13px;">📍 Abrir en Google Maps</a>
+            </div>
+            <div class="main-card" style="border-top-color: var(--green);">
+                <b>Disponibilidad</b>
+                <div class="val"><span id="resLibres" style="color:var(--green)">0</span> / <span id="resTotal">0</span></div>
+                <small>Puertos Libres</small>
+            </div>
+        </div>
 
-    <div id="res" style="display:none;">
-        <div class="card"><b>Equipo</b><span id="n"></span></div>
-        <div class="card"><b>Ubicación</b><span id="c"></span> | <a id="m" href="#" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold;">MAPS 📍</a></div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Pto</th>
-                    <th>F/S/P</th>
-                    <th>Estado / Cuenta</th>
-                </tr>
-            </thead>
-            <tbody id="t"></tbody>
-        </table>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pto</th>
+                        <th>Estado / Cuenta Cliente</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="history">
+        <h4>Búsquedas recientes (Últimas 10)</h4>
+        <div class="hist-tags" id="historial"></div>
     </div>
 </div>
 
 <script>
-    async function buscar() {
-        const q = document.getElementById('qr').value.trim();
-        const l = document.getElementById('loader');
-        const r = document.getElementById('res');
-        
-        l.style.display = 'block';
-        r.style.display = 'none';
+    let qrcodeGenerator = new QRCode(document.getElementById("qrcode"), { width: 60, height: 60 });
 
-        // Proxy ultra-rápido (aprovechando el cache de AllOrigins para peticiones repetidas)
-        const api = `https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=${q}`;
+    // Cargar historial al iniciar
+    window.onload = () => actualizarHistorialUI();
+
+    async function buscar(valorQR = null) {
+        const qr = valorQR || document.getElementById('qrInput').value.trim();
+        if(!qr) return;
+        
+        document.getElementById('qrInput').value = qr;
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('content').style.display = 'none';
+
+        const api = `https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=${qr}`;
         const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(api)}`;
 
         try {
-            // Usamos fetch con prioridad alta
-            const response = await fetch(proxy, { priority: 'high' });
-            const data = await response.json();
-            const json = JSON.parse(data.contents);
-            
-            const s = json.splitters[0];
-            const p = s.listmodelpuertos;
+            const resp = await fetch(proxy);
+            const wrapper = await resp.json();
+            const data = JSON.parse(wrapper.contents);
 
-            document.getElementById('n').innerText = s.nombre;
-            document.getElementById('c').innerText = `${json.latitud}, ${json.longitud}`;
-            document.getElementById('m').href = `https://www.google.com/maps/search/?api=1&query=${json.latitud},${json.longitud}`;
-
-            let h = '';
-            p.forEach(i => {
-                const libre = i.estatusPuerto == "1";
-                h += `<tr>
-                    <td><b>${i.numeroPuerto}</b></td>
-                    <td>${s.frame}/${s.slot}/${s.puerto}</td>
-                    <td class="status-${i.estatusPuerto}">${libre ? 'LIBRE' : (i.cuenta || 'OCUPADO')}</td>
-                </tr>`;
-            });
-            document.getElementById('t').innerHTML = h;
-            r.style.display = 'block';
+            if (data.splitters && data.splitters.length > 0) {
+                render(data, qr);
+                guardarHistorial(qr);
+            } else {
+                alert("QR no encontrado.");
+            }
         } catch (e) {
-            alert("Error de conexión rápida");
+            alert("Error de conexión con la API.");
         } finally {
-            l.style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
         }
     }
+
+    function render(data, qr) {
+        const splitter = data.splitters[0];
+        const puertos = splitter.listmodelpuertos;
+
+        // Datos Generales
+        document.getElementById('resNombre').innerText = splitter.nombre || "N/A";
+        document.getElementById('resFSP').innerText = `F: ${splitter.frame} | S: ${splitter.slot} | P: ${splitter.puerto}`;
+        document.getElementById('resCoords').innerText = `${data.latitud}, ${data.longitud}`;
+        document.getElementById('resMaps').href = `https://www.google.com/maps/search/?api=1&query=${data.latitud},${data.longitud}`;
+        
+        // QR Visual
+        qrcodeGenerator.clear();
+        qrcodeGenerator.makeCode(qr);
+
+        // Contador
+        const libres = puertos.filter(p => p.estatusPuerto == "1").length;
+        document.getElementById('resLibres').innerText = libres;
+        document.getElementById('resTotal').innerText = puertos.length;
+
+        // Tabla simplificada
+        const body = document.getElementById('tablaBody');
+        body.innerHTML = "";
+        puertos.forEach(p => {
+            const esLibre = p.estatusPuerto == "1";
+            body.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td><b>${p.numeroPuerto}</b></td>
+                    <td><span class="${esLibre ? 'status-libre' : 'status-ocupado'}">${esLibre ? 'LIBRE' : 'CUENTA: ' + (p.cuenta || 'OCUPADO')}</span></td>
+                </tr>
+            `);
+        });
+
+        document.getElementById('content').style.display = 'block';
+    }
+
+    function guardarHistorial(qr) {
+        let lista = JSON.parse(localStorage.getItem('gsa_hist')) || [];
+        lista = lista.filter(item => item !== qr); // Evitar repetidos
+        lista.unshift(qr); // Agregar al inicio
+        if(lista.length > 10) lista.pop(); // Mantener solo 10
+        localStorage.setItem('gsa_hist', JSON.stringify(lista));
+        actualizarHistorialUI();
+    }
+
+    function actualizarHistorialUI() {
+        const lista = JSON.parse(localStorage.getItem('gsa_hist')) || [];
+        const div = document.getElementById('historial');
+        div.innerHTML = lista.map(qr => `<div class="tag" onclick="buscar('${qr}')">${qr}</div>`).join('');
+    }
 </script>
+
 </body>
 </html>
