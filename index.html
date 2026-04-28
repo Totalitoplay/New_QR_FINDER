@@ -53,7 +53,7 @@
     padding: 18px 0 6px;
   }
   .logo {
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 3px;
     color: var(--accent);
@@ -73,10 +73,10 @@
   }
   .inp-prefix {
     position: absolute;
-    left: 14px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 12px;
+    font-size: 16px;
     color: var(--muted);
     pointer-events: none;
     letter-spacing: 1px;
@@ -87,28 +87,28 @@
     border: 1px solid var(--border);
     color: var(--text);
     font-family: var(--font);
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 500;
     letter-spacing: 2px;
-    padding: 14px 14px 14px 52px;
-    border-radius: 12px;
+    padding: 18px 16px 18px 58px;
+    border-radius: 14px;
     outline: none;
     text-transform: uppercase;
     transition: border-color 0.15s;
   }
   input[type=text]:focus { border-color: var(--accent); }
-  input[type=text]::placeholder { font-size: 14px; letter-spacing: 1px; color: var(--muted); }
+  input[type=text]::placeholder { font-size: 17px; letter-spacing: 1px; color: var(--muted); }
 
   .btn-search {
     background: var(--accent);
     color: #000;
     border: none;
-    padding: 0 22px;
-    border-radius: 12px;
+    padding: 0 28px;
+    border-radius: 14px;
     cursor: pointer;
     font-family: var(--font);
     font-weight: 500;
-    font-size: 13px;
+    font-size: 16px;
     letter-spacing: 2px;
     text-transform: uppercase;
     transition: opacity 0.15s, transform 0.1s;
@@ -121,29 +121,29 @@
   /* ── HISTORIAL ── */
   .history-row {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
-    min-height: 28px;
+    min-height: 36px;
   }
   .hist-chip {
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--muted);
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 14px;
     letter-spacing: 1.5px;
-    padding: 4px 10px;
-    border-radius: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
   }
   .hist-chip:hover { border-color: var(--border-hover); color: var(--accent); }
   .hist-chip .x {
     color: #475569;
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1;
     padding: 0 2px;
   }
@@ -173,16 +173,15 @@
     overflow: hidden;
   }
 
-  /* nombre + FSP */
   .node-header {
-    padding: 20px 22px 0;
+    padding: 24px 24px 0;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
   }
   .node-name {
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 500;
     color: var(--accent);
     letter-spacing: -0.5px;
@@ -190,42 +189,42 @@
   }
   .avail-badge {
     flex-shrink: 0;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
     letter-spacing: 1px;
     text-align: center;
     line-height: 1.3;
   }
-  .avail-badge .count { font-size: 20px; display: block; }
+  .avail-badge .count { font-size: 28px; display: block; }
 
-  /* FSP row – tres bloques grandes */
+  /* FSP row */
   .fsp-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 0;
-    margin: 16px 0 0;
+    margin: 20px 0 0;
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
   .fsp-block {
-    padding: 14px 16px;
+    padding: 18px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     border-right: 1px solid var(--border);
   }
   .fsp-block:last-child { border-right: none; }
   .fsp-label {
-    font-size: 10px;
-    letter-spacing: 2px;
+    font-size: 12px;
+    letter-spacing: 2.5px;
     color: var(--muted);
     text-transform: uppercase;
   }
   .fsp-val {
-    font-size: 28px;
+    font-size: 38px;
     font-weight: 500;
     color: #fff;
     line-height: 1;
@@ -235,31 +234,31 @@
   .qr-row {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 18px 22px;
+    gap: 24px;
+    padding: 22px 24px;
   }
   #qr-canvas {
-    border-radius: 10px;
+    border-radius: 12px;
     flex-shrink: 0;
     image-rendering: pixelated;
   }
   .qr-info { flex: 1; }
   .qr-code-label {
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 500;
     letter-spacing: 3px;
     color: #fff;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
   }
   .copy-btn {
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--muted);
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 14px;
     letter-spacing: 1.5px;
-    padding: 6px 12px;
-    border-radius: 7px;
+    padding: 9px 16px;
+    border-radius: 9px;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
     text-transform: uppercase;
@@ -268,21 +267,21 @@
   .copy-btn.copied { color: var(--green); border-color: rgba(52,211,153,0.3); }
 
   .coords {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--muted);
-    margin-top: 8px;
+    margin-top: 10px;
     letter-spacing: 0.5px;
   }
   .maps-btn {
     display: inline-block;
-    margin-top: 8px;
-    padding: 5px 11px;
+    margin-top: 10px;
+    padding: 8px 14px;
     background: rgba(66,133,244,0.12);
     color: #60a5fa;
     border: 1px solid rgba(66,133,244,0.2);
     text-decoration: none;
-    border-radius: 7px;
-    font-size: 11px;
+    border-radius: 9px;
+    font-size: 14px;
     letter-spacing: 1px;
     font-family: var(--font);
     transition: background 0.15s;
@@ -292,8 +291,8 @@
   /* ── TABLA DE PUERTOS ── */
   .ports-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
   .ports-title {
-    padding: 14px 20px;
-    font-size: 11px;
+    padding: 18px 24px;
+    font-size: 14px;
     letter-spacing: 2px;
     color: var(--muted);
     text-transform: uppercase;
@@ -304,29 +303,29 @@
   }
   .ports-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
   .port-cell {
-    padding: 14px 16px;
+    padding: 18px 20px;
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     transition: background 0.15s;
   }
   .port-cell:hover { background: rgba(255,255,255,0.02); }
   .port-cell.is-free { background: var(--green-dim); }
+  .port-num-label { font-size: 11px; letter-spacing: 2px; color: var(--muted); opacity: 0.7; text-transform: uppercase; }
   .port-num {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--muted);
     line-height: 1;
     letter-spacing: 1px;
   }
-  .port-num-label { font-size: 9px; letter-spacing: 1.5px; color: var(--muted); opacity: 0.6; text-transform: uppercase; margin-bottom: 2px; }
-  .port-status { font-size: 15px; font-weight: 500; letter-spacing: 0.5px; margin-top: 2px; }
-  .port-status.free { color: var(--green); font-size: 13px; letter-spacing: 2px; }
+  .port-status { font-size: 18px; font-weight: 500; letter-spacing: 0.5px; margin-top: 2px; }
+  .port-status.free { color: var(--green); font-size: 16px; letter-spacing: 2px; }
   .port-status.occ { color: #e2e8f0; word-break: break-all; line-height: 1.3; }
 
   /* ── ANIMACIÓN ENTRADA ── */
@@ -339,8 +338,10 @@
   /* ── MOBILE ── */
   @media (max-width: 480px) {
     .qr-row { flex-direction: column; align-items: flex-start; }
-    .node-name { font-size: 18px; }
-    .ports-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+    .node-name { font-size: 22px; }
+    .fsp-val { font-size: 30px; }
+    .ports-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+    input[type=text] { font-size: 18px; }
   }
 </style>
 </head>
@@ -395,7 +396,7 @@
         </div>
       </div>
       <div class="qr-row">
-        <canvas id="qr-canvas" width="128" height="128"></canvas>
+        <canvas id="qr-canvas" width="160" height="160"></canvas>
         <div class="qr-info">
           <div class="qr-code-label" id="qr-label">—</div>
           <button class="copy-btn" id="copyBtn" onclick="copiarQR()">Copiar código</button>
@@ -470,7 +471,7 @@ function dibujarQR(texto) {
   new window.QRious({
     element: document.getElementById("qr-canvas"),
     value: texto,
-    size: 128,
+    size: 160,
     level: "H",
     background: "#ffffff",
     foreground: "#000000"
