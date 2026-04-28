@@ -175,8 +175,7 @@
 
   /* nombre + FSP */
   .node-header {
-    padding: 20px 22px 16px;
-    border-bottom: 1px solid var(--border);
+    padding: 20px 22px 0;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -189,12 +188,6 @@
     letter-spacing: -0.5px;
     line-height: 1.2;
   }
-  .fsp {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    margin-top: 4px;
-  }
   .avail-badge {
     flex-shrink: 0;
     font-size: 13px;
@@ -206,6 +199,37 @@
     line-height: 1.3;
   }
   .avail-badge .count { font-size: 20px; display: block; }
+
+  /* FSP row – tres bloques grandes */
+  .fsp-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    margin: 16px 0 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .fsp-block {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border-right: 1px solid var(--border);
+  }
+  .fsp-block:last-child { border-right: none; }
+  .fsp-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .fsp-val {
+    font-size: 28px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1;
+  }
 
   /* QR row */
   .qr-row {
@@ -294,14 +318,16 @@
   .port-cell:hover { background: rgba(255,255,255,0.02); }
   .port-cell.is-free { background: var(--green-dim); }
   .port-num {
-    font-size: 20px;
+    font-size: 13px;
     font-weight: 500;
-    color: #fff;
+    color: var(--muted);
     line-height: 1;
+    letter-spacing: 1px;
   }
-  .port-status { font-size: 11px; letter-spacing: 1px; }
-  .port-status.free { color: var(--green); }
-  .port-status.occ { color: var(--muted); font-size: 10px; letter-spacing: 0.5px; word-break: break-all; }
+  .port-num-label { font-size: 9px; letter-spacing: 1.5px; color: var(--muted); opacity: 0.6; text-transform: uppercase; margin-bottom: 2px; }
+  .port-status { font-size: 15px; font-weight: 500; letter-spacing: 0.5px; margin-top: 2px; }
+  .port-status.free { color: var(--green); font-size: 13px; letter-spacing: 2px; }
+  .port-status.occ { color: #e2e8f0; word-break: break-all; line-height: 1.3; }
 
   /* ── ANIMACIÓN ENTRADA ── */
   @keyframes fadeUp {
@@ -348,13 +374,24 @@
   <div class="result" id="result">
     <div class="card anim">
       <div class="node-header">
-        <div>
-          <div class="node-name" id="n">—</div>
-          <div class="fsp" id="fsp">—</div>
-        </div>
+        <div class="node-name" id="n">—</div>
         <div class="avail-badge" id="avail-badge">
           <span class="count" id="li">0</span>
-          <span id="avail-label">/ <span id="to">0</span> libres</span>
+          <span>/ <span id="to">0</span> libres</span>
+        </div>
+      </div>
+      <div class="fsp-row">
+        <div class="fsp-block">
+          <div class="fsp-label">Frame</div>
+          <div class="fsp-val" id="fsp-f">—</div>
+        </div>
+        <div class="fsp-block">
+          <div class="fsp-label">Slot</div>
+          <div class="fsp-val" id="fsp-s">—</div>
+        </div>
+        <div class="fsp-block">
+          <div class="fsp-label">Puerto</div>
+          <div class="fsp-val" id="fsp-p">—</div>
         </div>
       </div>
       <div class="qr-row">
@@ -493,7 +530,9 @@ function render(d, q) {
   // Nombre y FSP
   const nombre = s.nombre || d.nombreCaja || "NODO SIN NOMBRE";
   document.getElementById("n").textContent = nombre;
-  document.getElementById("fsp").textContent = `F ${s.frame}  ·  S ${s.slot}  ·  P ${s.puerto}`;
+  document.getElementById("fsp-f").textContent = s.frame ?? "—";
+  document.getElementById("fsp-s").textContent = s.slot ?? "—";
+  document.getElementById("fsp-p").textContent = s.puerto ?? "—";
 
   // Disponibilidad
   const libres = puertos.filter(p => p.estatusPuerto == "1").length;
@@ -541,6 +580,10 @@ function render(d, q) {
     const cell = document.createElement("div");
     cell.className = "port-cell" + (libre ? " is-free" : "");
 
+    const lbl = document.createElement("div");
+    lbl.className = "port-num-label";
+    lbl.textContent = "Puerto";
+
     const num = document.createElement("div");
     num.className = "port-num";
     num.textContent = p.numeroPuerto;
@@ -549,6 +592,7 @@ function render(d, q) {
     st.className = "port-status " + (libre ? "free" : "occ");
     st.textContent = libre ? "LIBRE" : (p.cuenta || "OCUPADO");
 
+    cell.appendChild(lbl);
     cell.appendChild(num);
     cell.appendChild(st);
     frag.appendChild(cell);
