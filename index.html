@@ -225,16 +225,18 @@ function renderHistory() {
   const h = getHistory();
   if (!h.length) { row.innerHTML = ""; return; }
   row.innerHTML = h.map(q =>
-    `<div class="hist-chip" onclick="Directo('${q}')">
+    `<div class="hist-chip" onclick="buscarDirecto('${q}')">
       ${q}
-      <span class="x" onclick="event.stopPropagation();removeHistory('${q}')">✕</span>
+      <span class="x" onclick="event.stopPropagation(); removeHistory('${q}')">✕</span>
     </div>`
   ).join("");
 }
 function buscarDirecto(q) {
   const input = document.getElementById("qrIn");
-  input.value = q; // Pone el código del historial en el cuadro de texto
-  buscar();        // Lanza la búsqueda con la nueva lógica de la Worker
+    if (input) {
+      input.value = q;
+      buscar(); // Llama a la función principal
+  }
 }
 
 // ── QR ──
