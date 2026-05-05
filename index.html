@@ -199,6 +199,8 @@ const PROXY   = "https://script.google.com/macros/s/AKfycbyWJGhLSe13Su18iNlKxOJb
 const API_BASE = "https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=";
 const HIST_KEY = "gsa_history";
 const MAX_HIST = 8;
+const WORKER_URL = "https://findqr.playtotalito.workers.dev/"; 
+
 
 // 3. OPTIMIZACIÓN: caché en memoria — re-consultas son instantáneas
 const resultCache = new Map();
@@ -276,14 +278,15 @@ async function buscar() {
   setLoading(true);
 
 try {
-    const url = `${API_BASE}${q}`; // Petición directa
-    const r = await fetch(url, {
-        method: 'GET',
-        mode: 'cors' // Forzar modo CORS
-    });
+    // Aquí es donde sucede la magia: 
+    // Enviamos la URL de la API como un parámetro a tu Worker
+    const apiTarget = `${API_BASE}${q}`;
+    const url = `${WORKER_URL}?qrUrl=${encodeURIComponent(apiTarget)}`;
+
+    const r = await fetch(url);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-
+  
     if (d.splitters && d.splitters.length > 0) {
       resultCache.set(q, d);   // guardar en caché
       render(d, q);
