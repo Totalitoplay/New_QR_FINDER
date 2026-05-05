@@ -195,8 +195,6 @@
 </div>
 
 <script>
-const PROXY   = "https://script.google.com/macros/s/AKfycbyWJGhLSe13Su18iNlKxOJb9dfWhO-y9bTztVjDxSjOFEgXV0fSomewghHgBzEBaRVHrQ/exec";
-const API_BASE = "https://apiservice.sistemastp.com.mx/gsa/lite/v1/port/qr?qr=";
 const HIST_KEY = "gsa_history";
 const MAX_HIST = 8;
 const WORKER_URL = "https://findqr.playtotalito.workers.dev/"; 
@@ -278,13 +276,12 @@ async function buscar() {
   setLoading(true);
 
 try {
-    // Aquí es donde sucede la magia: 
-    // Enviamos la URL de la API como un parámetro a tu Worker
-    const apiTarget = `${API_BASE}${q}`;
-    const url = `${WORKER_URL}?qrUrl=${encodeURIComponent(apiTarget)}`;
+    // Ahora solo le mandas el código 'q', nada de URLs largas
+    const url = `${WORKER_URL}?qr=${q}`;
 
     const r = await fetch(url);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  
     const d = await r.json();
   
     if (d.splitters && d.splitters.length > 0) {
