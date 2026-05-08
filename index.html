@@ -11,7 +11,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap">
 
 <!-- 2. OPTIMIZACIÓN: QRious cargado con async en <head> -->
+
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 
 <style>
   :root {
@@ -133,6 +138,38 @@
     .ports-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
     input[type=text] { font-size: 18px; }
   }
+
+  .btn-scan {
+    width: 100%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px dashed var(--accent);
+    padding: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .btn-scan:hover {
+    background: var(--accent);
+    color: #000;
+    border-style: solid;
+  }
+  .btn-scan svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
 </style>
 </head>
 <body>
@@ -142,6 +179,17 @@
     <div class="logo">GSA <span>//</span> Pro</div>
   </header>
 
+    <div id="reader-wrapper" style="display: none; width: 100%; margin-bottom: 12px;">
+    <div id="reader" style="border-radius: 16px; overflow: hidden; border: 1px solid var(--accent);"></div>
+    <button class="copy-btn" style="width: 100%; margin-top: 10px; color: var(--red);" onclick="stopScan()">
+        ✕ CANCELAR ESCANEO
+    </button>
+    </div>
+
+    <button class="btn-scan" id="btnScan" onclick="startScan()">
+    <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2m8 3a5 5 0 0 0-5 5 5 5 0 0 0 5 5 5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 2a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3Z"/></svg>
+    ESCANEAR QR
+    </button>
   <div class="search-row">
     <div class="inp-wrap">
       <span class="inp-prefix">TP ›</span>
@@ -392,6 +440,46 @@ document.getElementById("qrIn").addEventListener("keypress", e => {
 
 // ── INIT ──
 renderHistory();
+
+let html5QrCode;
+
+async function startScan() {
+  document.getElementById("reader-wrapper").style.display = "block";
+  document.getElementById("btnScan").style.display = "none";
+  
+  html5QrCode = new Html5Qrcode("reader");
+  const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+  try {
+    await html5QrCode.start(
+      { facingMode: "environment" }, // Usa la cámara trasera
+      config,
+      (decodedText) => {
+        // Al detectar un QR:
+        document.getElementById("qrIn").value = decodedText; // Pone el texto en el input
+        stopScan(); // Detiene la cámara
+        buscar();   // Ejecuta la búsqueda automáticamente
+      },
+      (errorMessage) => {
+        // Error de escaneo (silencioso para no saturar)
+      }
+    );
+  } catch (err) {
+    console.error("Error al iniciar cámara:", err);
+    alert("No se pudo acceder a la cámara. Asegúrate de dar permisos.");
+    stopScan();
+  }
+}
+
+function stopScan() {
+  if (html5QrCode) {
+    html5QrCode.stop().then(() => {
+      document.getElementById("reader-wrapper").style.display = "none";
+      document.getElementById("btnScan").style.display = "flex"; // Cambiado a flex
+    }).catch(err => console.error(err));
+  }
+}
+
 </script>
 </body>
 </html>
