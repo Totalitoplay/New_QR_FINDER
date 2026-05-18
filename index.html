@@ -248,8 +248,7 @@ const MAX_HIST = 8;
 const WORKER_URL = "https://findqr.playtotalito.workers.dev/"; 
 
 
-// 3. OPTIMIZACIÓN: caché en memoria — re-consultas son instantáneas
-const resultCache = new Map();
+
 
 let currentQR = "";
 
@@ -318,12 +317,6 @@ async function buscar() {
 
   currentQR = q;
 
-  // 5. OPTIMIZACIÓN: servir desde caché sin hacer fetch ni mostrar skeleton
-  if (resultCache.has(q)) {
-    render(resultCache.get(q), q);
-    return;
-  }
-
   setLoading(true);
 
 try {
@@ -336,9 +329,6 @@ try {
     const d = await r.json();
   
     if (d.splitters && d.splitters.length > 0) {
-      resultCache.set(q, d);   // guardar en caché
-      render(d, q);
-      saveHistory(q);
       renderHistory();
       input.value = "";
       input.blur();
